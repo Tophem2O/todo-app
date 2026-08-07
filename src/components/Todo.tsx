@@ -30,6 +30,11 @@ function Todo() {
         }
     }
 
+    const handleTaskDeletion = (idToDelete: number) => (
+        setTask(task.filter(task => (task.id) !== (idToDelete)))
+    )
+
+
 
     return (
         <div>
@@ -46,7 +51,7 @@ function Todo() {
             <ul>
                 {
                     task.map((task) => (
-                        <li key={task.id}>{task.text}</li>
+                        <li key={task.id}>{task.text} <button onClick={() => handleTaskDeletion(task.id)}>Delete</button></li>
                     ))
                 }
             </ul>
