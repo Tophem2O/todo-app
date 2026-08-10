@@ -11,8 +11,11 @@ function Todo() {
 
     const [task, setTask] = useState<taskProperties[]>([])
     const [input, setInput] = useState("")
+    const [editText, setEditText] = useState("")
+    const [edittingTaskId, setEdittingTaskId] = useState<number | null>(null)
+    const [filter, setFilter] = useState<"All" | "Completed" | "Pending">("All")
 
-    const handleTaskInput = () => {
+    const handleInput = () => {
         if (input === "") {
             return
         }
@@ -28,11 +31,11 @@ function Todo() {
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
-            handleTaskInput()
+            handleInput()
         }
     }
 
-    const handleTaskDeletion = (idToDelete: number) => (
+    const handleDeletion = (idToDelete: number) => (
         setTask(task.filter(task => (task.id) !== (idToDelete)))
     )
 
@@ -50,6 +53,18 @@ function Todo() {
         }))
     )
 
+    const handleEditing = (taskId: number, newText: string) => (
+        setTask(task.map(task => {
+            if (task.id === taskId) {
+                return {
+                    ...task,
+                    text: newText
+                }
+            }
+            return task;
+        }))
+    )
+
     return (
         <div>
             <input
@@ -60,22 +75,45 @@ function Todo() {
                 onKeyDown={handleKeyDown}
                 className=""
             />
-            <button onClick={handleTaskInput}>Add task</button>
+            <button onClick={handleInput}>Add task</button>
+
+            <div>
+                <button onClick={() => setFilter("All")}>All</button>
+                <button onClick={() => setFilter("Completed")}>Completed</button>
+                <button onClick={() => setFilter("Pending")}>Pending</button>
+            </div>
 
             <ul>
                 {
                     task.map((task) => (
                         <li
                             key={task.id}
-                        ><span className={task.isCompleted ? "line-through" : ""}>{task.text}</span>
-                            <button onClick={() => handleTaskDeletion(task.id)}>Delete</button>
+                        >
+                            {
+                                edittingTaskId === task.id ? (
+                                    <input value={editText} onChange={(e) => setEditText(e.target.value)} />
+                                ) : (
+                                    <span className={task.isCompleted ? "line-through" : ""}>{task.text}</span>
+                                )
+                            }
+                            <button onClick={() => handleDeletion(task.id)}>Delete</button>
                             <button onClick={() => isTaskComplete(task.id)}>{task.isCompleted ? "Undo" : "Complete"}</button>
+                            <button onClick={() => {
+                                if (edittingTaskId === task.id) {
+                                    handleEditing(task.id, editText);
+                                    setEdittingTaskId(null);
+                                } else {
+                                    setEdittingTaskId(task.id);
+                                    setEditText(task.text);
+                                }
+                            }} >{edittingTaskId === task.id ? "Save" : "Edit"}</button>
                         </li>
                     ))
                 }
             </ul>
-        </div>
+        </div >
     )
 }
 
 export default Todo;
+
