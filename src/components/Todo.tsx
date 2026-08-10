@@ -13,7 +13,7 @@ function Todo() {
     const [input, setInput] = useState("")
     const [editText, setEditText] = useState("")
     const [edittingTaskId, setEdittingTaskId] = useState<number | null>(null)
-    const [filter, setFilter] = useState<"All" | "Completed" | "Pending">("All")
+    const [filterStatus, setFilter] = useState<"All" | "Completed" | "Pending">("All")
 
     const handleInput = () => {
         if (input === "") {
@@ -65,6 +65,58 @@ function Todo() {
         }))
     )
 
+    const handleFilterStatus = (filterStatus: "All" | "Completed" | "Pending") => {
+        if (filterStatus === "Completed") {
+            return (
+                task.filter(task => (task.isCompleted) === true)
+            )
+        } else if (filterStatus === "Pending") {
+            return (
+                task.filter(task => (task.isCompleted) === false)
+            )
+        } else {
+            return task
+        }
+    }
+
+    const mainRender = (filterStatus: "All" | "Completed" | "Pending") => {
+
+        const filteredTasks = handleFilterStatus(filterStatus)
+
+        return (
+            <>
+                <ul>
+                    {
+                        filteredTasks.map((task) => (
+                            <li
+                                key={task.id}
+                            >
+                                {
+                                    edittingTaskId === task.id ? (
+                                        <input value={editText} onChange={(e) => setEditText(e.target.value)} />
+                                    ) : (
+                                        <span className={task.isCompleted ? "line-through" : ""}>{task.text}</span>
+                                    )
+                                }
+                                <button onClick={() => handleDeletion(task.id)}>Delete</button>
+                                <button onClick={() => isTaskComplete(task.id)}>{task.isCompleted ? "Undo" : "Complete"}</button>
+                                <button onClick={() => {
+                                    if (edittingTaskId === task.id) {
+                                        handleEditing(task.id, editText);
+                                        setEdittingTaskId(null);
+                                    } else {
+                                        setEdittingTaskId(task.id);
+                                        setEditText(task.text);
+                                    }
+                                }} >{edittingTaskId === task.id ? "Save" : "Edit"}</button>
+                            </li>
+                        ))
+                    }
+                </ul>
+            </>
+        )
+    }
+
     return (
         <div>
             <input
@@ -82,35 +134,7 @@ function Todo() {
                 <button onClick={() => setFilter("Completed")}>Completed</button>
                 <button onClick={() => setFilter("Pending")}>Pending</button>
             </div>
-
-            <ul>
-                {
-                    task.map((task) => (
-                        <li
-                            key={task.id}
-                        >
-                            {
-                                edittingTaskId === task.id ? (
-                                    <input value={editText} onChange={(e) => setEditText(e.target.value)} />
-                                ) : (
-                                    <span className={task.isCompleted ? "line-through" : ""}>{task.text}</span>
-                                )
-                            }
-                            <button onClick={() => handleDeletion(task.id)}>Delete</button>
-                            <button onClick={() => isTaskComplete(task.id)}>{task.isCompleted ? "Undo" : "Complete"}</button>
-                            <button onClick={() => {
-                                if (edittingTaskId === task.id) {
-                                    handleEditing(task.id, editText);
-                                    setEdittingTaskId(null);
-                                } else {
-                                    setEdittingTaskId(task.id);
-                                    setEditText(task.text);
-                                }
-                            }} >{edittingTaskId === task.id ? "Save" : "Edit"}</button>
-                        </li>
-                    ))
-                }
-            </ul>
+            <main>{mainRender(filterStatus)}</main>
         </div >
     )
 }
