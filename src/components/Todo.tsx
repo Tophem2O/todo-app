@@ -4,6 +4,7 @@ import React from "react";
 type taskProperties = {
     id: number;
     text: string;
+    isCompleted: boolean;
 }
 
 function Todo() {
@@ -18,7 +19,8 @@ function Todo() {
 
         setTask([...task, {
             id: Date.now(),
-            text: input
+            text: input,
+            isCompleted: false
         }]);
 
         setInput("");
@@ -34,7 +36,19 @@ function Todo() {
         setTask(task.filter(task => (task.id) !== (idToDelete)))
     )
 
+    const isTaskComplete = (taskId: number) => (
+        setTask(task.map(task => {
+            if (task.id === taskId) {
+                return {
+                    ...task,
+                    isCompleted: !task.isCompleted
+                }
 
+            }
+            return task;
+
+        }))
+    )
 
     return (
         <div>
@@ -51,7 +65,12 @@ function Todo() {
             <ul>
                 {
                     task.map((task) => (
-                        <li key={task.id}>{task.text} <button onClick={() => handleTaskDeletion(task.id)}>Delete</button></li>
+                        <li
+                            key={task.id}
+                        ><span className={task.isCompleted ? "line-through" : ""}>{task.text}</span>
+                            <button onClick={() => handleTaskDeletion(task.id)}>Delete</button>
+                            <button onClick={() => isTaskComplete(task.id)}>{task.isCompleted ? "Undo" : "Complete"}</button>
+                        </li>
                     ))
                 }
             </ul>
