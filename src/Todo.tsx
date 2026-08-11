@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-import type { TaskProperties } from "./types/taskProperties";
+import type { TaskProperties } from "./types/TaskProperties";
 import type { FilterStatus } from "./types/FilterStatus";
 import ToDoInput from "./components/ToDoInput";
 import { FilterButtons } from "./components/FilterButtons";
@@ -81,13 +81,15 @@ function Todo() {
     const FILTERED_TASKS = handleFilterStatus(filterStatus)
 
     return (
-        <div>
-            <ToDoInput
-                input={input}
-                setInput={setInput}
-                handleKeyDown={handleKeyDown}
-                handleInput={handleInput} />
-            <div>
+        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-700/40 rounded-3xl shadow-2xl shadow-black/80 p-6 sm:p-8 md:p-10">
+            <div className="mb-8">
+                <ToDoInput
+                    input={input}
+                    setInput={setInput}
+                    handleKeyDown={handleKeyDown}
+                    handleInput={handleInput} />
+            </div>
+            <div className="space-y-6">
                 <FilterButtons
                     setFilter={setFilter}
                 />
@@ -102,7 +104,7 @@ function Todo() {
                     handleEditing={handleEditing}
                 />
             </div>
-        </div >
+        </div>
     )
 }
 
